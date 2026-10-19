@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microsoft Word - Editor de Documentos Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Aptos:wght@400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --word-blue: #185abd;
+      --word-blue-hover: #103f91;
+      --word-blue-light: #e5f1fb;
+      --ribbon-bg: #f3f2f1;
+      --ribbon-border: #e1dfdd;
+      --ribbon-btn-hover: #e5e5e5;
+      --ribbon-btn-active: #c7e0f4;
+      --app-gray: #f0f2f5;
+      --text-dark: #201f1e;
+      --text-muted: #605e5c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background-color: var(--app-gray);
+      color: var(--text-dark);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Top Blue Header */
+    .word-top-header {
+      background-color: var(--word-blue);
+      color: #ffffff;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .word-badge {
+      background-color: #ffffff;
+      color: var(--word-blue);
+      font-weight: 800;
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .doc-title-input {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .doc-title-input:hover, .doc-title-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .save-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 12px;
+      opacity: 0.95;
+    }
+    .save-status-pill svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    .quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .qa-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .qa-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .qa-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+    }
+
+    /* Ribbon Tabs Bar */
+    .ribbon-tabs-bar {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid var(--ribbon-border);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      height: 34px;
+      flex-shrink: 0;
+    }
+
+    .ribbon-tab-btn {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dark);
+      cursor: pointer;
+      position: relative;
+      height: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.15s;
+    }
+    .ribbon-tab-btn:hover {
+      background: var(--ribbon-btn-hover);
+    }
+    .ribbon-tab-btn.active {
+      color: var(--word-blue);
+      font-weight: 600;
+      border-bottom: 2px solid var(--word-blue);
+      background: var(--ribbon-bg);
+    }
+    .file-tab-btn {
+      background-color: var(--word-blue);
+      color: #ffffff !important;
+      font-weight: 600;
+      border-radius: 4px;
+      height: 26px;
+      margin-right: 6px;
+      display: flex;
+      align-items: center;
+    }
+    .file-tab-btn:hover {
+      background-color: var(--word-blue-hover) !important;
+    }
+
+    /* Ribbon Content Area */
+    .ribbon-panel-container {
+      background-color: var(--ribbon-bg);
+      border-bottom: 1px solid var(--ribbon-border);
+      min-height: 84px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .ribbon-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--ribbon-border);
+      padding-right: 12px;
+      flex-shrink: 0;
+    }
+    .ribbon-group:last-child {
+      border-right: none;
+    }
+
+    .ribbon-group-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+      user-select: none;
+    }
+
+    .ribbon-group-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .ribbon-btn-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* Toolbar Buttons & Controls */
+    .r-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      height: 28px;
+      padding: 0 6px;
+      font-size: 13px;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s;
+      outline: none;
+    }
+    .r-btn:hover {
+      background-color: var(--ribbon-btn-hover);
+      border-color: #d1cfcd;
+    }
+    .r-btn:active, .r-btn.active {
+      background-color: var(--ribbon-btn-active);
+      border-color: #0078d4;
+      color: var(--word-blue);
+    }
+    .r-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    .r-btn-large {
+      flex-direction: column;
+      height: 60px;
+      padding: 4px 10px;
+      gap: 4px;
+      font-size: 11px;
+      text-align: center;
+    }
+    .r-btn-large svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .r-select {
+      height: 26px;
+      border: 1px solid #d1cfcd;
+      border-radius: 3px;
+      background: #ffffff;
+      padding: 0 6px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    .r-select:focus {
+      border-color: var(--word-blue);
+    }
+
+    .color-picker-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .color-input-hidden {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+
+    /* Style Presets Gallery */
+    .styles-gallery {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .style-box {
+      border: 1px solid #d1cfcd;
+      background: #ffffff;
+      padding: 4px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      min-width: 70px;
+      text-align: left;
+      height: 54px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .style-box:hover {
+      border-color: var(--word-blue);
+      background: var(--word-blue-light);
+    }
+    .style-box-name {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Ruler */
+    .ruler-container {
+      background: #faf9f8;
+      border-bottom: 1px solid #edebe9;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .ruler-track {
+      width: 820px;
+      height: 100%;
+      background: #ffffff;
+      border-left: 1px solid #d2d0ce;
+      border-right: 1px solid #d2d0ce;
+      position: relative;
+      display: flex;
+      font-size: 9px;
+      color: #8a8886;
+      line-height: 18px;
+    }
+    .ruler-mark {
+      flex: 1;
+      border-right: 1px solid #e1dfdd;
+      text-align: right;
+      padding-right: 2px;
+    }
+
+    /* Main Workspace & Page Layout */
+    .workspace-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+      background-color: var(--app-gray);
+      padding: 24px 20px 60px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .page-scale-wrapper {
+      transform-origin: top center;
+      transition: transform 0.15s ease-out;
+    }
+
+    .document-page {
+      background-color: #ffffff;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 25mm 25mm;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
+      border-radius: 1px;
+      outline: none;
+      font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #111827;
+      user-select: text;
+      position: relative;
+    }
+
+    /* Page elements typography inside editor */
+    .document-page h1 {
+      font-size: 22pt;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-bottom: 12pt;
+      line-height: 1.25;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 4pt;
+    }
+    .document-page h2 {
+      font-size: 16pt;
+      font-weight: 600;
+      color: #2563eb;
+      margin-top: 14pt;
+      margin-bottom: 8pt;
+      line-height: 1.3;
+    }
+    .document-page h3 {
+      font-size: 13pt;
+      font-weight: 600;
+      color: #374151;
+      margin-top: 10pt;
+      margin-bottom: 6pt;
+    }
+    .document-page p {
+      margin-bottom: 10pt;
+    }
+    .document-page blockquote {
+      border-left: 4px solid var(--word-blue);
+      padding-left: 14px;
+      margin: 12pt 0;
+      font-style: italic;
+      color: #4b5563;
+      background: #f8fafc;
+      padding: 8pt 12pt;
+      border-radius: 0 6px 6px 0;
+    }
+    .document-page ul, .document-page ol {
+      margin-bottom: 10pt;
+      padding-left: 24pt;
+    }
+    .document-page li {
+      margin-bottom: 4pt;
+    }
+    .document-page table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14pt 0;
+      font-size: 10.5pt;
+    }
+    .document-page th, .document-page td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .document-page th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .document-page tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .document-page hr {
+      border: none;
+      height: 1px;
+      background-color: #cbd5e1;
+      margin: 16pt 0;
+    }
+    .document-page img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 8pt 0;
+    }
+    .document-page a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+
+    /* Bottom Status Bar */
+    .word-status-bar {
+      background-color: var(--word-blue);
+      color: #ffffff;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-clickable {
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 2px;
+      transition: background 0.15s;
+    }
+    .status-clickable:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .zoom-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zoom-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .zoom-slider {
+      width: 80px;
+      height: 4px;
+      accent-color: #ffffff;
+      cursor: pointer;
+    }
+
+    /* Modals & Dialogs */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+      width: 440px;
+      max-width: 90vw;
+      overflow: hidden;
+      transform: translateY(-10px);
+      transition: transform 0.2s ease;
+    }
+    .modal-backdrop.open .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e1dfdd;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #605e5c;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .modal-close-btn:hover {
+      background: #e1dfdd;
+      color: #000;
+    }
+
+    .modal-body {
+      padding: 18px;
+      font-size: 13px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #323130;
+      margin-bottom: 4px;
+    }
+    .form-input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid #8a8886;
+      border-radius: 3px;
+      padding: 0 10px;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--word-blue);
+      box-shadow: 0 0 0 1px var(--word-blue);
+    }
+
+    .modal-footer {
+      background: #f8f9fa;
+      border-top: 1px solid #e1dfdd;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .modal-btn {
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 1px solid #8a8886;
+      background: #ffffff;
+      color: #201f1e;
+      transition: all 0.15s;
+    }
+    .modal-btn:hover {
+      background: #f3f2f1;
+    }
+    .modal-btn-primary {
+      background: var(--word-blue);
+      border-color: var(--word-blue);
+      color: #ffffff;
+    }
+    .modal-btn-primary:hover {
+      background: var(--word-blue-hover);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 40px;
+      right: 24px;
+      background: #323130;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+    .toast-container.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .word-top-header,
+      .ribbon-tabs-bar,
+      .ribbon-panel-container,
+      .ruler-container,
+      .word-status-bar,
+      .modal-backdrop,
+      .toast-container {
+        display: none !important;
+      }
+      .workspace-area {
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+      }
+      .page-scale-wrapper {
+        transform: none !important;
+      }
+      .document-page {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Word Blue Header -->
+  <header class="word-top-header">
+    <div class="header-left">
+      <div class="word-badge" title="Microsoft Word">W</div>
+      <input type="text" id="docTitleInput" class="doc-title-input" value="Documento 1 - Word" title="Cambiar título del documento">
+      <div class="save-status-pill" id="saveStatusIndicator" title="Guardado automáticamente en el explorador">
+        <svg viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+        <span>Guardado</span>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button class="qa-btn" id="qaSaveBtn" title="Guardar documento (Ctrl+S)">
+        <svg viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4.414a1 1 0 0 0-.293-.707l-2.414-2.414A1 1 0 0 0 11.586 1H2zm2 1h7v3H4V2zm8 12H4v-4h8v4z"/></svg>
+      </button>
+      <button class="qa-btn" id="qaUndoBtn" title="Deshacer (Ctrl+Z)">
+        <svg viewBox="0 0 16 16"><path d="M8 3a5 5 0 0 0-5 5v1.5H1.5L4 12l2.5-2.5H5V8a3 3 0 0 1 6 0 3 3 0 0 1-3 3H6v2h2a5 5 0 0 0 5-5 5 5 0 0 0-5-5z"/></svg>
+      </button>
+      <button class="qa-btn" id="qaRedoBtn" title="Rehacer (Ctrl+Y)">
+        <svg viewBox="0 0 16 16"><path d="M8 3a5 5 0 0 1 5 5v1.5h1.5L12 12l-2.5-2.5H11V8a3 3 0 0 0-6 0 3 3 0 0 0 3 3h2v2H8a5 5 0 0 1-5-5 5 5 0 0 1 5-5z"/></svg>
+      </button>
+      <button class="qa-btn" id="qaPrintBtn" title="Imprimir / Exportar a PDF (Ctrl+P)">
+        <svg viewBox="0 0 16 16"><path d="M4 1h8a1 1 0 0 1 1 1v2H3V2a1 1 0 0 1 1-1zm9 4H3a2 2 0 0 0-2 2v4a1 1 0 0 0 1 1h1v3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3h1a1 1 0 0 0 1-1V7a2 2 0 0 0-2-2zm-2 9H5v-4h6v4zm2-6.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Ribbon Tabs Navigation -->
+  <nav class="ribbon-tabs-bar">
+    <button class="ribbon-tab-btn file-tab-btn" id="tabBtnArchivo">Archivo</button>
+    <button class="ribbon-tab-btn active" id="tabBtnInicio" data-panel="panelInicio">Inicio</button>
+    <button class="ribbon-tab-btn" id="tabBtnInsertar" data-panel="panelInsertar">Insertar</button>
+    <button class="ribbon-tab-btn" id="tabBtnDisposicion" data-panel="panelDisposicion">Disposición</button>
+    <button class="ribbon-tab-btn" id="tabBtnRevisar" data-panel="panelRevisar">Revisar</button>
+    <button class="ribbon-tab-btn" id="tabBtnVista" data-panel="panelVista">Vista</button>
+  </nav>
+
+  <!-- Ribbon Toolbar Panels -->
+  <div class="ribbon-panel-container">
+
+    <!-- PANEL INICIO -->
+    <div id="panelInicio" class="ribbon-group-content">
+      <!-- Portapapeles -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnPegar" title="Pegar texto">
+            <svg viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+            <span>Pegar</span>
+          </button>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <button class="r-btn" id="btnCortar" title="Cortar selección">
+              <svg viewBox="0 0 16 16"><path d="M3.5 3.5c-.628 0-1.16.292-1.5.76a2.002 2.002 0 0 0 2.5 2.98L7.085 5.5l-.895-.895A2 2 0 0 0 3.5 3.5zm0 1c.552 0 1 .448 1 1s-.448 1-1 1-1-.448-1-1 .448-1 1-1zM3.5 9c-.628 0-1.16.292-1.5.76a2.002 2.002 0 0 0 2.5 2.98l2.585-1.74-.895-.895A2 2 0 0 0 3.5 9zm0 1c.552 0 1 .448 1 1s-.448 1-1 1-1-.448-1-1 .448-1 1-1zm3.896-.707 5.922 4.025a.5.5 0 0 0 .684-.684L8.08 7.31l-.684.983zM14 3.5a.5.5 0 0 0-.684.144L7.394 7.668l.685.984 5.92-4.468A.5.5 0 0 0 14 3.5z"/></svg>
+              <span>Cortar</span>
+            </button>
+            <button class="r-btn" id="btnCopiar" title="Copiar selección">
+              <svg viewBox="0 0 16 16"><path d="M4 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4zm3-3h6a2 2 0 0 1 2 2v9a1 1 0 0 1-2 0V2a1 1 0 0 0-1-1H7a1 1 0 0 1 0-2z"/></svg>
+              <span>Copiar</span>
+            </button>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Portapapeles</div>
+      </div>
+
+      <!-- Fuente -->
+      <div class="ribbon-group">
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <!-- Fila 1: Familia y Tamaño -->
+          <div class="ribbon-btn-row">
+            <select class="r-select" id="fontFamilySelect" style="width: 140px;" title="Tipografía">
+              <option value="'Segoe UI', sans-serif" selected>Segoe UI</option>
+              <option value="'Calibri', sans-serif">Calibri</option>
+              <option value="'Aptos', sans-serif">Aptos</option>
+              <option value="'Arial', sans-serif">Arial</option>
+              <option value="'Times New Roman', serif">Times New Roman</option>
+              <option value="'Georgia', serif">Georgia</option>
+              <option value="'Merriweather', serif">Merriweather</option>
+              <option value="'Courier New', monospace">Courier New</option>
+              <option value="'Roboto Mono', monospace">Roboto Mono</option>
+            </select>
+
+            <select class="r-select" id="fontSizeSelect" style="width: 58px;" title="Tamaño de fuente">
+              <option value="1">8 pt</option>
+              <option value="2">10 pt</option>
+              <option value="3" selected>11 pt</option>
+              <option value="4">12 pt</option>
+              <option value="5">14 pt</option>
+              <option value="6">18 pt</option>
+              <option value="7">24 pt</option>
+            </select>
+
+            <button class="r-btn" id="btnIncreaseFontSize" title="Aumentar tamaño de fuente" style="font-weight:700;">A<sup>+</sup></button>
+            <button class="r-btn" id="btnDecreaseFontSize" title="Disminuir tamaño de fuente" style="font-weight:700;">A<sup>-</sup></button>
+            <button class="r-btn" id="btnClearFormatting" title="Borrar todo el formato">
+              <span style="font-size:12px; font-weight:bold;">A<small>x</small></span>
+            </button>
+          </div>
+
+          <!-- Fila 2: Estilos rápidos y color -->
+          <div class="ribbon-btn-row">
+            <button class="r-btn" id="btnBold" title="Negrita (Ctrl+B)"><b>N</b></button>
+            <button class="r-btn" id="btnItalic" title="Cursiva (Ctrl+I)"><i>K</i></button>
+            <button class="r-btn" id="btnUnderline" title="Subrayado (Ctrl+U)"><u>S</u></button>
+            <button class="r-btn" id="btnStrike" title="Tachado"><s>abc</s></button>
+            <button class="r-btn" id="btnSubscript" title="Subíndice">x<sub>2</sub></button>
+            <button class="r-btn" id="btnSuperscript" title="Superíndice">x<sup>2</sup></button>
+
+            <!-- Color de Texto -->
+            <div class="color-picker-wrap" title="Color de fuente">
+              <button class="r-btn" id="btnTextColorLabel" style="border-bottom: 3px solid #000000; padding: 0 4px;">
+                <span style="font-weight:bold;">A</span>
+              </button>
+              <input type="color" id="inputTextColor" class="color-input-hidden" value="#000000">
+            </div>
+
+            <!-- Resaltado -->
+            <div class="color-picker-wrap" title="Color de resaltado">
+              <button class="r-btn" id="btnHighlightLabel" style="border-bottom: 3px solid #fffb00; padding: 0 4px;">
+                <svg viewBox="0 0 16 16"><path d="M11.5 1.5 14.5 4.5l-8 8H3.5v-3l8-8zm2 2L12 2l-1 1 1.5 1.5 1-1zM4.5 10.5v1h1l6.5-6.5-1-1-6.5 6.5z"/></svg>
+              </button>
+              <input type="color" id="inputHighlightColor" class="color-input-hidden" value="#fffb00">
+            </div>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Fuente</div>
+      </div>
+
+      <!-- Párrafo -->
+      <div class="ribbon-group">
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <!-- Fila 1: Listas y Sangrías -->
+          <div class="ribbon-btn-row">
+            <button class="r-btn" id="btnBulletList" title="Viñetas">
+              <svg viewBox="0 0 16 16"><path d="M2 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm4-1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1H6zm0 5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1H6zm0 5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1H6zM2 8.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0 5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg>
+            </button>
+            <button class="r-btn" id="btnNumberList" title="Numeración">
+              <svg viewBox="0 0 16 16"><path d="M1 2.5a.5.5 0 0 1 1 0v3a.5.5 0 0 1-1 0V4H.5a.5.5 0 0 1 0-1H1V2.5zm4 0a.5.5 0 0 0 0 1h10a.5.5 0 0 0 0-1H5zm0 5a.5.5 0 0 0 0 1h10a.5.5 0 0 0 0-1H5zm0 5a.5.5 0 0 0 0 1h10a.5.5 0 0 0 0-1H5z"/></svg>
+            </button>
+            <button class="r-btn" id="btnOutdent" title="Disminuir sangría">
+              <svg viewBox="0 0 16 16"><path d="M14.5 3a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zm0 5a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zm0 5a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zM3.854 5.146a.5.5 0 0 0-.708 0l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L2.207 7.5l1.647-1.646a.5.5 0 0 0 0-.708z"/></svg>
+            </button>
+            <button class="r-btn" id="btnIndent" title="Aumentar sangría">
+              <svg viewBox="0 0 16 16"><path d="M14.5 3a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zm0 5a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zm0 5a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h8a.5.5 0 0 0 .5-.5zM1.146 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L2.793 7.5 1.146 5.854a.5.5 0 0 1 0-.708z"/></svg>
+            </button>
+            <select class="r-select" id="lineHeightSelect" style="width: 70px;" title="Espaciado entre líneas">
+              <option value="1.0">1.0</option>
+              <option value="1.15">1.15</option>
+              <option value="1.5" selected>1.5</option>
+              <option value="2.0">2.0</option>
+            </select>
+          </div>
+
+          <!-- Fila 2: Alineaciones -->
+          <div class="ribbon-btn-row">
+            <button class="r-btn active" id="btnAlignLeft" title="Alinear a la izquierda (Ctrl+L)">
+              <svg viewBox="0 0 16 16"><path d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <button class="r-btn" id="btnAlignCenter" title="Centrar (Ctrl+E)">
+              <svg viewBox="0 0 16 16"><path d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm2 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm2 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <button class="r-btn" id="btnAlignRight" title="Alinear a la derecha (Ctrl+R)">
+              <svg viewBox="0 0 16 16"><path d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm4 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-4 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm4 3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <button class="r-btn" id="btnAlignJustify" title="Justificar (Ctrl+J)">
+              <svg viewBox="0 0 16 16"><path d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <button class="r-btn" id="btnBlockquote" title="Cita en bloque">
+              <svg viewBox="0 0 16 16"><path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.351.021-.703.064-1.054.062-.372.166-.703.31-.992.145-.291.331-.517.559-.677.232-.16.516-.241.851-.241v-1.6c-.66 0-1.22.182-1.68.544-.457.363-.807.868-1.05 1.516-.242.648-.363 1.41-.363 2.285V11a1 1 0 0 0 1 1H12zm-6 0a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.351.021-.703.064-1.054.062-.372.166-.703.31-.992.145-.291.331-.517.559-.677.232-.16.516-.241.851-.241v-1.6c-.66 0-1.22.182-1.68.544-.457.363-.807.868-1.05 1.516-.242.648-.363 1.41-.363 2.285V11a1 1 0 0 0 1 1H6z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Párrafo</div>
+      </div>
+
+      <!-- Estilos -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content styles-gallery">
+          <div class="style-box" id="styleNormal" title="Estilo Normal (párrafo estándar)">
+            <span style="font-size: 13px; font-weight: 500;">AaBbCc</span>
+            <span class="style-box-name">Normal</span>
+          </div>
+          <div class="style-box" id="styleHeading1" title="Título principal 1">
+            <span style="font-size: 14px; font-weight: 700; color: #1e3a8a;">AaBbCc</span>
+            <span class="style-box-name">Título 1</span>
+          </div>
+          <div class="style-box" id="styleHeading2" title="Título secundario 2">
+            <span style="font-size: 13px; font-weight: 600; color: #2563eb;">AaBbCc</span>
+            <span class="style-box-name">Título 2</span>
+          </div>
+          <div class="style-box" id="styleHeading3" title="Subtítulo 3">
+            <span style="font-size: 12px; font-weight: 600; color: #4b5563;">AaBbCc</span>
+            <span class="style-box-name">Título 3</span>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Estilos</div>
+      </div>
+
+      <!-- Edición -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnBuscarReemplazar" title="Buscar y reemplazar texto">
+            <svg viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+            <span>Buscar</span>
+          </button>
+        </div>
+        <div class="ribbon-group-title">Edición</div>
+      </div>
+    </div>
+
+    <!-- PANEL INSERTAR -->
+    <div id="panelInsertar" class="ribbon-group-content" style="display:none;">
+      <!-- Tablas -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnInsertarTabla" title="Insertar una tabla estructurada">
+            <svg viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/></svg>
+            <span>Tabla</span>
+          </button>
+        </div>
+        <div class="ribbon-group-title">Tablas</div>
+      </div>
+
+      <!-- Ilustraciones -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnInsertarImagen" title="Insertar imagen desde archivo o URL">
+            <svg viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/></svg>
+            <span>Imagen</span>
+          </button>
+          <input type="file" id="fileImageInput" accept="image/*" style="display:none;">
+        </div>
+        <div class="ribbon-group-title">Ilustraciones</div>
+      </div>
+
+      <!-- Vínculos y Elementos -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnInsertarEnlace" title="Insertar un hipervínculo web">
+            <svg viewBox="0 0 16 16"><path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/><path d="M9 5.5a3 3 0 0 0-2.83 4h.832c.086 0 .17-.01.25-.031A2 2 0 0 1 9 5.5h3a2 2 0 1 1 0 4h-1.535c-.218.376-.495.714-.82 1H12a3 3 0 1 0 0-6H9z"/></svg>
+            <span>Vínculo</span>
+          </button>
+          <button class="r-btn r-btn-large" id="btnInsertarLinea" title="Insertar línea divisoria">
+            <svg viewBox="0 0 16 16"><path d="M0 8a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H.5A.5.5 0 0 1 0 8z"/></svg>
+            <span>Separador</span>
+          </button>
+          <button class="r-btn r-btn-large" id="btnInsertarFecha" title="Insertar fecha y hora actual">
+            <svg viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+            <span>Fecha</span>
+          </button>
+          <button class="r-btn r-btn-large" id="btnInsertarSimbolo" title="Insertar símbolos y caracteres especiales">
+            <svg viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+            <span>Símbolo</span>
+          </button>
+        </div>
+        <div class="ribbon-group-title">Vínculos y Símbolos</div>
+      </div>
+    </div>
+
+    <!-- PANEL DISPOSICIÓN -->
+    <div id="panelDisposicion" class="ribbon-group-content" style="display:none;">
+      <!-- Configuración de Página -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:12px; color:var(--text-muted);">Márgenes:</span>
+              <select class="r-select" id="pageMarginsSelect" style="width: 130px;">
+                <option value="normal" selected>Normal (2.5 cm)</option>
+                <option value="estrecho">Estrecho (1.27 cm)</option>
+                <option value="ancho">Ancho (3.8 cm)</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:12px; color:var(--text-muted);">Orientación:</span>
+              <select class="r-select" id="pageOrientationSelect" style="width: 130px;">
+                <option value="portrait" selected>Vertical</option>
+                <option value="landscape">Horizontal</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Configurar Página</div>
+      </div>
+
+      <!-- Fondo de Página -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; color:var(--text-muted);">Color de Hoja:</span>
+            <select class="r-select" id="pageColorSelect" style="width: 140px;">
+              <option value="#ffffff" selected>Blanco estándar</option>
+              <option value="#fcfbf7">Marfil / Cuidado visual</option>
+              <option value="#f5f5f4">Gris suave</option>
+              <option value="#1e293b">Modo Pizarra (Oscuro)</option>
+            </select>
+          </div>
+        </div>
+        <div class="ribbon-group-title">Fondo</div>
+      </div>
+    </div>
+
+    <!-- PANEL REVISAR -->
+    <div id="panelRevisar" class="ribbon-group-content" style="display:none;">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large" id="btnEstadisticas" title="Ver recuento completo de palabras, caracteres y párrafos">
+            <svg viewBox="0 0 16 16"><path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5h-2v12h2V2z"/><path d="M1 14h14v1H1v-1z"/></svg>
+            <span>Estadísticas</span>
+          </button>
+          <button class="r-btn r-btn-large" id="btnLimpiarDocumento" title="Vaciar todo el contenido del documento">
+            <svg viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/></svg>
+            <span>Borrar Todo</span>
+          </button>
+        </div>
+        <div class="ribbon-group-title">Revisión</div>
+      </div>
+    </div>
+
+    <!-- PANEL VISTA -->
+    <div id="panelVista" class="ribbon-group-content" style="display:none;">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button class="r-btn r-btn-large active" id="btnModoEdicion" title="Modo edición interactivo">
+            <svg viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
+            <span>Edición</span>
+          </button>
+          <button class="r-btn r-btn-large" id="btnModoLectura" title="Modo lectura sin distracciones">
+            <svg viewBox="0 0 16 16"><path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/></svg>
+            <span>Lectura</span>
+          </button>
+        </div>
+        <div class="ribbon-group-title">Vistas</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
+            <input type="checkbox" id="checkShowRuler" checked> Mostrar regla
+          </label>
+        </div>
+        <div class="ribbon-group-title">Mostrar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ruler -->
+  <div class="ruler-container" id="rulerBar">
+    <div class="ruler-track">
+      <div class="ruler-mark">1</div>
+      <div class="ruler-mark">2</div>
+      <div class="ruler-mark">3</div>
+      <div class="ruler-mark">4</div>
+      <div class="ruler-mark">5</div>
+      <div class="ruler-mark">6</div>
+      <div class="ruler-mark">7</div>
+      <div class="ruler-mark">8</div>
+      <div class="ruler-mark">9</div>
+      <div class="ruler-mark">10</div>
+      <div class="ruler-mark">11</div>
+      <div class="ruler-mark">12</div>
+      <div class="ruler-mark">13</div>
+      <div class="ruler-mark">14</div>
+      <div class="ruler-mark">15</div>
+      <div class="ruler-mark">16</div>
+    </div>
+  </div>
+
+  <!-- Workspace Canvas -->
+  <main class="workspace-area" id="workspaceArea">
+    <div class="page-scale-wrapper" id="pageWrapper">
+      <div class="document-page" id="editor" contenteditable="true" spellcheck="true">
+        <h1>Bienvenido a Microsoft Word Web</h1>
+        <p>Este es un procesador de texto completo e interactivo estilo <strong>Microsoft Word</strong> creado para ti. Puedes escribir, editar, formatear y exportar tus documentos directamente desde el navegador con todas las herramientas profesionales que conoces.</p>
+
+        <h2>Características y Herramientas Disponibles</h2>
+        <ul>
+          <li><strong>Formato enriquecido:</strong> Negrita, cursiva, subrayado, tachado, subíndice, superíndice y selector de colores de fuente y resaltado.</li>
+          <li><strong>Párrafos y estilos:</strong> Títulos preconfigurados (Título 1, 2, 3), citas en bloque, sangrías, viñetas, listas numeradas e interlineado ajustable.</li>
+          <li><strong>Inserción completa:</strong> Tablas editables, imágenes locales y web, hipervínculos, líneas divisorias y caracteres especiales.</li>
+          <li><strong>Configuración de página:</strong> Márgenes normales, estrechos o anchos, orientación vertical/horizontal y colores de hoja.</li>
+          <li><strong>Guardado y exportación:</strong> Auto-guardado en el navegador, descarga en HTML/Word e impresión directa a PDF con calidad profesional.</li>
+        </ul>
+
+        <h2>Tabla de Ejemplo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Función</th>
+              <th>Atajo de Teclado</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Guardar documento</td>
+              <td>Ctrl + S</td>
+              <td>Guarda los cambios en el almacenamiento local</td>
+            </tr>
+            <tr>
+              <td>Deshacer / Rehacer</td>
+              <td>Ctrl + Z / Ctrl + Y</td>
+              <td>Revierte o recupera las últimas acciones realizadas</td>
+            </tr>
+            <tr>
+              <td>Imprimir / PDF</td>
+              <td>Ctrl + P</td>
+              <td>Exporta la hoja limpia a formato PDF</td>
+            </tr>
+            <tr>
+              <td>Buscar y reemplazar</td>
+              <td>Ctrl + F</td>
+              <td>Localiza términos específicos en todo el texto</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <blockquote>
+          "El verdadero poder de la escritura radica en la claridad de las ideas y la precisión de las palabras."
+        </blockquote>
+
+        <p>¡Empieza a redactar tu documento ahora mismo! Haz clic en cualquier parte de esta página para editar o escribe tu propio contenido.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Word Status Bar -->
+  <footer class="word-status-bar">
+    <div class="status-left">
+      <span>Página 1 de 1</span>
+      <span class="status-clickable" id="statusWordCount" title="Haga clic para ver estadísticas detalladas">0 palabras</span>
+      <span class="status-clickable" id="statusCharCount">0 caracteres</span>
+      <span>Español (Alfabetización internacional)</span>
+    </div>
+    <div class="status-right">
+      <div class="zoom-ctrl">
+        <button class="zoom-btn" id="btnZoomOut" title="Reducir zoom">-</button>
+        <input type="range" id="zoomSlider" class="zoom-slider" min="50" max="175" value="100" step="5">
+        <button class="zoom-btn" id="btnZoomIn" title="Aumentar zoom">+</button>
+        <span id="zoomLabel" style="width: 36px; text-align:right;">100%</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: ARCHIVO / BACKSTAGE -->
+  <div class="modal-backdrop" id="modalArchivo">
+    <div class="modal-card" style="width: 500px;">
+      <div class="modal-header">
+        <h3>Menú Archivo - Microsoft Word</h3>
+        <button class="modal-close-btn" id="closeModalArchivo">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="modal-btn" id="btnArchivoNuevo" style="display:flex; align-items:center; gap:8px; padding:10px 14px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+            <div style="text-align:left;">
+              <strong>Nuevo documento</strong>
+              <div style="font-size:11px; color:#605e5c;">Crear un documento en blanco nuevo</div>
+            </div>
+          </button>
+
+          <button class="modal-btn" id="btnArchivoAbrir" style="display:flex; align-items:center; gap:8px; padding:10px 14px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 16 16"><path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h11.62c.24 0 .47.042.684.12l.006-.139A1 1 0 0 0 13.5 2H9.828a1 1 0 0 0-.707-.293L8.293 1.293A1 1 0 0 0 7.586 1H6.172a1 1 0 0 0-.707.293L4.88 2.293z"/></svg>
+            <div style="text-align:left;">
+              <strong>Abrir archivo</strong>
+              <div style="font-size:11px; color:#605e5c;">Cargar documento HTML, Word HTML o texto (.html, .txt)</div>
+            </div>
+          </button>
+          <input type="file" id="fileDocInput" accept=".html,.htm,.txt" style="display:none;">
+
+          <button class="modal-btn" id="btnArchivoDescargarHTML" style="display:flex; align-items:center; gap:8px; padding:10px 14px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+            <div style="text-align:left;">
+              <strong>Descargar como Documento (.html / .doc)</strong>
+              <div style="font-size:11px; color:#605e5c;">Descargar archivo editable listo para abrir en Word o navegador</div>
+            </div>
+          </button>
+
+          <button class="modal-btn" id="btnArchivoImprimir" style="display:flex; align-items:center; gap:8px; padding:10px 14px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 16 16"><path d="M4 1h8a1 1 0 0 1 1 1v2H3V2a1 1 0 0 1 1-1zm9 4H3a2 2 0 0 0-2 2v4a1 1 0 0 0 1 1h1v3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-3h1a1 1 0 0 0 1-1V7a2 2 0 0 0-2-2zm-2 9H5v-4h6v4zm2-6.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z"/></svg>
+            <div style="text-align:left;">
+              <strong>Imprimir o Exportar a PDF</strong>
+              <div style="font-size:11px; color:#605e5c;">Diseño limpio de impresión profesional</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnCerrarModalArchivo">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSERTAR VÍNCULO -->
+  <div class="modal-backdrop" id="modalLink">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Insertar Hipervínculo</h3>
+        <button class="modal-close-btn" id="closeModalLink">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputLinkText">Texto para mostrar:</label>
+          <input type="text" id="inputLinkText" class="form-input" placeholder="Ej: Visitar sitio web">
+        </div>
+        <div class="form-group">
+          <label for="inputLinkUrl">Dirección URL:</label>
+          <input type="url" id="inputLinkUrl" class="form-input" placeholder="https://ejemplo.com">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnCancelLink">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="btnApplyLink">Insertar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSERTAR TABLA -->
+  <div class="modal-backdrop" id="modalTable">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Insertar Tabla</h3>
+        <button class="modal-close-btn" id="closeModalTable">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputTableRows">Número de Filas:</label>
+          <input type="number" id="inputTableRows" class="form-input" value="3" min="1" max="20">
+        </div>
+        <div class="form-group">
+          <label for="inputTableCols">Número de Columnas:</label>
+          <input type="number" id="inputTableCols" class="form-input" value="3" min="1" max="10">
+        </div>
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="checkTableHeader" checked> Incluir fila de encabezado
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnCancelTable">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="btnApplyTable">Crear Tabla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSERTAR IMAGEN -->
+  <div class="modal-backdrop" id="modalImage">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Insertar Imagen</h3>
+        <button class="modal-close-btn" id="closeModalImage">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Opción 1: Subir desde tu equipo</label>
+          <button class="modal-btn" id="btnTriggerFileInput" style="width:100%; padding:8px;">Seleccionar archivo de imagen...</button>
+        </div>
+        <div style="text-align:center; margin: 10px 0; color:#8a8886; font-size:11px;">— O —</div>
+        <div class="form-group">
+          <label for="inputImageUrl">Opción 2: Dirección URL de la imagen:</label>
+          <input type="url" id="inputImageUrl" class="form-input" placeholder="https://ejemplo.com/foto.jpg">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnCancelImage">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="btnApplyImage">Insertar por URL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BUSCAR Y REEMPLAZAR -->
+  <div class="modal-backdrop" id="modalSearch">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Buscar y Reemplazar</h3>
+        <button class="modal-close-btn" id="closeModalSearch">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputSearchFind">Buscar:</label>
+          <input type="text" id="inputSearchFind" class="form-input" placeholder="Palabra o frase a buscar">
+        </div>
+        <div class="form-group">
+          <label for="inputSearchReplace">Reemplazar por:</label>
+          <input type="text" id="inputSearchReplace" class="form-input" placeholder="Texto de sustitución">
+        </div>
+        <div id="searchMatchStatus" style="font-size:12px; color:var(--word-blue); min-height:18px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnSearchFindNext">Buscar siguiente</button>
+        <button class="modal-btn modal-btn-primary" id="btnSearchReplaceAll">Reemplazar todo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ESTADÍSTICAS -->
+  <div class="modal-backdrop" id="modalStats">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Estadísticas del Documento</h3>
+        <button class="modal-close-btn" id="closeModalStats">&times;</button>
+      </div>
+      <div class="modal-body">
+        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+          <tbody>
+            <tr><td style="padding:6px 0; border-bottom:1px solid #edebe9;">Páginas estimadas:</td><td style="text-align:right; font-weight:600;" id="statPages">1</td></tr>
+            <tr><td style="padding:6px 0; border-bottom:1px solid #edebe9;">Palabras:</td><td style="text-align:right; font-weight:600;" id="statWords">0</td></tr>
+            <tr><td style="padding:6px 0; border-bottom:1px solid #edebe9;">Caracteres (sin espacios):</td><td style="text-align:right; font-weight:600;" id="statCharsNoSpace">0</td></tr>
+            <tr><td style="padding:6px 0; border-bottom:1px solid #edebe9;">Caracteres (con espacios):</td><td style="text-align:right; font-weight:600;" id="statChars">0</td></tr>
+            <tr><td style="padding:6px 0; border-bottom:1px solid #edebe9;">Párrafos:</td><td style="text-align:right; font-weight:600;" id="statParagraphs">0</td></tr>
+            <tr><td style="padding:6px 0;">Tiempo estimado de lectura:</td><td style="text-align:right; font-weight:600;" id="statReadingTime">0 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-primary" id="btnCloseStats">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SÍMBOLOS -->
+  <div class="modal-backdrop" id="modalSymbols">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Insertar Símbolo</h3>
+        <button class="modal-close-btn" id="closeModalSymbols">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid; grid-template-columns: repeat(8, 1fr); gap:6px; text-align:center; font-size:18px;">
+          <button class="modal-btn symbol-pick-btn">©</button>
+          <button class="modal-btn symbol-pick-btn">®</button>
+          <button class="modal-btn symbol-pick-btn">™</button>
+          <button class="modal-btn symbol-pick-btn">€</button>
+          <button class="modal-btn symbol-pick-btn">£</button>
+          <button class="modal-btn symbol-pick-btn">¥</button>
+          <button class="modal-btn symbol-pick-btn">§</button>
+          <button class="modal-btn symbol-pick-btn">¶</button>
+          <button class="modal-btn symbol-pick-btn">°</button>
+          <button class="modal-btn symbol-pick-btn">±</button>
+          <button class="modal-btn symbol-pick-btn">×</button>
+          <button class="modal-btn symbol-pick-btn">÷</button>
+          <button class="modal-btn symbol-pick-btn">∞</button>
+          <button class="modal-btn symbol-pick-btn">≈</button>
+          <button class="modal-btn symbol-pick-btn">≠</button>
+          <button class="modal-btn symbol-pick-btn">≤</button>
+          <button class="modal-btn symbol-pick-btn">≥</button>
+          <button class="modal-btn symbol-pick-btn">←</button>
+          <button class="modal-btn symbol-pick-btn">→</button>
+          <button class="modal-btn symbol-pick-btn">↑</button>
+          <button class="modal-btn symbol-pick-btn">↓</button>
+          <button class="modal-btn symbol-pick-btn">★</button>
+          <button class="modal-btn symbol-pick-btn">✓</button>
+          <button class="modal-btn symbol-pick-btn">✗</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="btnCloseSymbols">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toastNotice">Mensaje de notificación</div>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const editor = document.getElementById('editor');
+      const docTitleInput = document.getElementById('docTitleInput');
+      const saveStatusIndicator = document.getElementById('saveStatusIndicator');
+      const toastNotice = document.getElementById('toastNotice');
+      const pageWrapper = document.getElementById('pageWrapper');
+      const zoomSlider = document.getElementById('zoomSlider');
+      const zoomLabel = document.getElementById('zoomLabel');
+      const statusWordCount = document.getElementById('statusWordCount');
+      const statusCharCount = document.getElementById('statusCharCount');
+
+      let savedSelectionRange = null;
+
+      function showToast(message) {
+        toastNotice.textContent = message;
+        toastNotice.classList.add('show');
+        setTimeout(() => {
+          toastNotice.classList.remove('show');
+        }, 2800);
+      }
+
+      function saveSelection() {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+          savedSelectionRange = sel.getRangeAt(0).cloneRange();
+        }
+      }
+
+      function restoreSelection() {
+        if (savedSelectionRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedSelectionRange);
+        }
+      }
+
+      function execCmd(command, value = null) {
+        editor.focus();
+        document.execCommand(command, false, value);
+        updateDocStats();
+        triggerAutoSave();
+      }
+
+      // --- Ribbon Tab Switching ---
+      const ribbonTabs = document.querySelectorAll('.ribbon-tab-btn[data-panel]');
+      const ribbonPanels = document.querySelectorAll('.ribbon-panel-container .ribbon-group-content');
+
+      ribbonTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          ribbonTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const targetPanelId = tab.getAttribute('data-panel');
+          ribbonPanels.forEach(panel => {
+            if (panel.id === targetPanelId) {
+              panel.style.display = 'flex';
+            } else {
+              panel.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // --- Archivo (Backstage modal) ---
+      const tabBtnArchivo = document.getElementById('tabBtnArchivo');
+      const modalArchivo = document.getElementById('modalArchivo');
+      const closeModalArchivo = document.getElementById('closeModalArchivo');
+      const btnCerrarModalArchivo = document.getElementById('btnCerrarModalArchivo');
+
+      function openModal(modal) {
+        saveSelection();
+        modal.classList.add('open');
+      }
+      function closeModal(modal) {
+        modal.classList.remove('open');
+        restoreSelection();
+      }
+
+      tabBtnArchivo.addEventListener('click', () => openModal(modalArchivo));
+      closeModalArchivo.addEventListener('click', () => closeModal(modalArchivo));
+      btnCerrarModalArchivo.addEventListener('click', () => closeModal(modalArchivo));
+
+      // --- Quick Actions & File Operations ---
+      const qaSaveBtn = document.getElementById('qaSaveBtn');
+      const qaUndoBtn = document.getElementById('qaUndoBtn');
+      const qaRedoBtn = document.getElementById('qaRedoBtn');
+      const qaPrintBtn = document.getElementById('qaPrintBtn');
+
+      function saveDocumentLocally() {
+        try {
+          localStorage.setItem('word_doc_title', docTitleInput.value);
+          localStorage.setItem('word_doc_content', editor.innerHTML);
+          saveStatusIndicator.style.opacity = '1';
+          showToast('¡Documento guardado con éxito!');
+        } catch (e) {
+          showToast('Almacenamiento local completo o no disponible.');
+        }
+      }
+
+      let autoSaveTimer = null;
+      function triggerAutoSave() {
+        saveStatusIndicator.style.opacity = '0.5';
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+          try {
+            localStorage.setItem('word_doc_title', docTitleInput.value);
+            localStorage.setItem('word_doc_content', editor.innerHTML);
+            saveStatusIndicator.style.opacity = '1';
+          } catch (e) {}
+        }, 1200);
+      }
+
+      qaSaveBtn.addEventListener('click', saveDocumentLocally);
+      qaUndoBtn.addEventListener('click', () => execCmd('undo'));
+      qaRedoBtn.addEventListener('click', () => execCmd('redo'));
+      qaPrintBtn.addEventListener('click', () => window.print());
+
+      // Archivo Modal Buttons
+      const btnArchivoNuevo = document.getElementById('btnArchivoNuevo');
+      const btnArchivoAbrir = document.getElementById('btnArchivoAbrir');
+      const fileDocInput = document.getElementById('fileDocInput');
+      const btnArchivoDescargarHTML = document.getElementById('btnArchivoDescargarHTML');
+      const btnArchivoImprimir = document.getElementById('btnArchivoImprimir');
+
+      btnArchivoNuevo.addEventListener('click', () => {
+        closeModal(modalArchivo);
+        editor.innerHTML = '<h1>Nuevo Documento</h1><p>Escribe tu contenido aquí...</p>';
+        docTitleInput.value = 'Documento 1 - Word';
+        updateDocStats();
+        triggerAutoSave();
+        showToast('Nuevo documento en blanco creado.');
+      });
+
+      btnArchivoAbrir.addEventListener('click', () => {
+        fileDocInput.click();
+      });
+
+      fileDocInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            editor.innerHTML = event.target.result;
+            docTitleInput.value = file.name.replace(/\.[^/.]+$/, "");
+            closeModal(modalArchivo);
+            updateDocStats();
+            triggerAutoSave();
+            showToast('Documento cargado correctamente.');
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      btnArchivoDescargarHTML.addEventListener('click', () => {
+        const title = docTitleInput.value.trim() || 'Documento';
+        const docHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+  <style>
+    body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; margin: 40px auto; max-width: 800px; line-height: 1.6; color: #111; }
+    h1 { color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 4px; }
+    h2 { color: #2563eb; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    th { background: #f1f5f9; }
+    blockquote { border-left: 4px solid #185abd; padding: 8px 12px; background: #f8fafc; font-style: italic; }
+  </style>
+</head>
+<body>
+${editor.innerHTML}
+</body>
+</html>`;
+        const blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        closeModal(modalArchivo);
+        showToast('Documento descargado en formato HTML/Word.');
+      });
+
+      btnArchivoImprimir.addEventListener('click', () => {
+        closeModal(modalArchivo);
+        window.print();
+      });
+
+      // --- Portapapeles (Clipboard) ---
+      document.getElementById('btnPegar').addEventListener('click', async () => {
+        editor.focus();
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const text = await navigator.clipboard.readText();
+            execCmd('insertText', text);
+          } else {
+            showToast('Utiliza Ctrl+V para pegar directamente');
+          }
+        } catch (e) {
+          showToast('Utiliza el atajo Ctrl+V para pegar');
+        }
+      });
+
+      document.getElementById('btnCortar').addEventListener('click', () => {
+        document.execCommand('cut');
+        updateDocStats();
+        triggerAutoSave();
+      });
+
+      document.getElementById('btnCopiar').addEventListener('click', () => {
+        document.execCommand('copy');
+        showToast('Texto copiado al portapapeles');
+      });
+
+      // --- Fuente (Font formatting) ---
+      const fontFamilySelect = document.getElementById('fontFamilySelect');
+      const fontSizeSelect = document.getElementById('fontSizeSelect');
+      const btnIncreaseFontSize = document.getElementById('btnIncreaseFontSize');
+      const btnDecreaseFontSize = document.getElementById('btnDecreaseFontSize');
+      const btnClearFormatting = document.getElementById('btnClearFormatting');
+
+      fontFamilySelect.addEventListener('change', () => {
+        execCmd('fontName', fontFamilySelect.value);
+      });
+
+      fontSizeSelect.addEventListener('change', () => {
+        execCmd('fontSize', fontSizeSelect.value);
+      });
+
+      btnIncreaseFontSize.addEventListener('click', () => {
+        const curIdx = fontSizeSelect.selectedIndex;
+        if (curIdx < fontSizeSelect.options.length - 1) {
+          fontSizeSelect.selectedIndex = curIdx + 1;
+          execCmd('fontSize', fontSizeSelect.value);
+        }
+      });
+
+      btnDecreaseFontSize.addEventListener('click', () => {
+        const curIdx = fontSizeSelect.selectedIndex;
+        if (curIdx > 0) {
+          fontSizeSelect.selectedIndex = curIdx - 1;
+          execCmd('fontSize', fontSizeSelect.value);
+        }
+      });
+
+      btnClearFormatting.addEventListener('click', () => {
+        execCmd('removeFormat');
+      });
+
+      document.getElementById('btnBold').addEventListener('click', () => execCmd('bold'));
+      document.getElementById('btnItalic').addEventListener('click', () => execCmd('italic'));
+      document.getElementById('btnUnderline').addEventListener('click', () => execCmd('underline'));
+      document.getElementById('btnStrike').addEventListener('click', () => execCmd('strikeThrough'));
+      document.getElementById('btnSubscript').addEventListener('click', () => execCmd('subscript'));
+      document.getElementById('btnSuperscript').addEventListener('click', () => execCmd('superscript'));
+
+      // Text Color & Highlight
+      const inputTextColor = document.getElementById('inputTextColor');
+      const btnTextColorLabel = document.getElementById('btnTextColorLabel');
+      inputTextColor.addEventListener('input', (e) => {
+        const color = e.target.value;
+        btnTextColorLabel.style.borderBottomColor = color;
+        execCmd('foreColor', color);
+      });
+
+      const inputHighlightColor = document.getElementById('inputHighlightColor');
+      const btnHighlightLabel = document.getElementById('btnHighlightLabel');
+      inputHighlightColor.addEventListener('input', (e) => {
+        const color = e.target.value;
+        btnHighlightLabel.style.borderBottomColor = color;
+        execCmd('hiliteColor', color);
+      });
+
+      // --- Párrafo (Paragraph formatting) ---
+      document.getElementById('btnBulletList').addEventListener('click', () => execCmd('insertUnorderedList'));
+      document.getElementById('btnNumberList').addEventListener('click', () => execCmd('insertOrderedList'));
+      document.getElementById('btnOutdent').addEventListener('click', () => execCmd('outdent'));
+      document.getElementById('btnIndent').addEventListener('click', () => execCmd('indent'));
+
+      const lineHeightSelect = document.getElementById('lineHeightSelect');
+      lineHeightSelect.addEventListener('change', () => {
+        editor.style.lineHeight = lineHeightSelect.value;
+      });
+
+      document.getElementById('btnAlignLeft').addEventListener('click', () => execCmd('justifyLeft'));
+      document.getElementById('btnAlignCenter').addEventListener('click', () => execCmd('justifyCenter'));
+      document.getElementById('btnAlignRight').addEventListener('click', () => execCmd('justifyRight'));
+      document.getElementById('btnAlignJustify').addEventListener('click', () => execCmd('justifyFull'));
+      document.getElementById('btnBlockquote').addEventListener('click', () => execCmd('formatBlock', '<blockquote>'));
+
+      // --- Estilos rápidos ---
+      document.getElementById('styleNormal').addEventListener('click', () => execCmd('formatBlock', '<p>'));
+      document.getElementById('styleHeading1').addEventListener('click', () => execCmd('formatBlock', '<h1>'));
+      document.getElementById('styleHeading2').addEventListener('click', () => execCmd('formatBlock', '<h2>'));
+      document.getElementById('styleHeading3').addEventListener('click', () => execCmd('formatBlock', '<h3>'));
+
+      // --- Insertar: Vínculo ---
+      const modalLink = document.getElementById('modalLink');
+      const closeModalLink = document.getElementById('closeModalLink');
+      const btnCancelLink = document.getElementById('btnCancelLink');
+      const btnApplyLink = document.getElementById('btnApplyLink');
+      const inputLinkText = document.getElementById('inputLinkText');
+      const inputLinkUrl = document.getElementById('inputLinkUrl');
+
+      document.getElementById('btnInsertarEnlace').addEventListener('click', () => {
+        const sel = window.getSelection();
+        inputLinkText.value = sel.toString() || '';
+        inputLinkUrl.value = 'https://';
+        openModal(modalLink);
+      });
+
+      closeModalLink.addEventListener('click', () => closeModal(modalLink));
+      btnCancelLink.addEventListener('click', () => closeModal(modalLink));
+
+      btnApplyLink.addEventListener('click', () => {
+        const url = inputLinkUrl.value.trim();
+        const text = inputLinkText.value.trim() || url;
+        closeModal(modalLink);
+        if (url) {
+          const html = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+          execCmd('insertHTML', html);
+        }
+      });
+
+      // --- Insertar: Tabla ---
+      const modalTable = document.getElementById('modalTable');
+      const closeModalTable = document.getElementById('closeModalTable');
+      const btnCancelTable = document.getElementById('btnCancelTable');
+      const btnApplyTable = document.getElementById('btnApplyTable');
+      const inputTableRows = document.getElementById('inputTableRows');
+      const inputTableCols = document.getElementById('inputTableCols');
+      const checkTableHeader = document.getElementById('checkTableHeader');
+
+      document.getElementById('btnInsertarTabla').addEventListener('click', () => {
+        openModal(modalTable);
+      });
+
+      closeModalTable.addEventListener('click', () => closeModal(modalTable));
+      btnCancelTable.addEventListener('click', () => closeModal(modalTable));
+
+      btnApplyTable.addEventListener('click', () => {
+        const rows = parseInt(inputTableRows.value, 10) || 3;
+        const cols = parseInt(inputTableCols.value, 10) || 3;
+        const hasHeader = checkTableHeader.checked;
+        closeModal(modalTable);
+
+        let tableHtml = '<table>';
+        if (hasHeader) {
+          tableHtml += '<thead><tr>';
+          for (let c = 1; c <= cols; c++) {
+            tableHtml += `<th>Encabezado ${c}</th>`;
+          }
+          tableHtml += '</tr></thead>';
+        }
+        tableHtml += '<tbody>';
+        for (let r = 1; r <= rows; r++) {
+          tableHtml += '<tr>';
+          for (let c = 1; c <= cols; c++) {
+            tableHtml += `<td>Dato ${r},${c}</td>`;
+          }
+          tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody></table><p><br></p>';
+
+        execCmd('insertHTML', tableHtml);
+      });
+
+      // --- Insertar: Imagen ---
+      const modalImage = document.getElementById('modalImage');
+      const closeModalImage = document.getElementById('closeModalImage');
+      const btnCancelImage = document.getElementById('btnCancelImage');
+      const btnApplyImage = document.getElementById('btnApplyImage');
+      const btnTriggerFileInput = document.getElementById('btnTriggerFileInput');
+      const fileImageInput = document.getElementById('fileImageInput');
+      const inputImageUrl = document.getElementById('inputImageUrl');
+
+      document.getElementById('btnInsertarImagen').addEventListener('click', () => {
+        openModal(modalImage);
+      });
+
+      closeModalImage.addEventListener('click', () => closeModal(modalImage));
+      btnCancelImage.addEventListener('click', () => closeModal(modalImage));
+
+      btnTriggerFileInput.addEventListener('click', () => {
+        fileImageInput.click();
+      });
+
+      fileImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = event.target.result;
+            closeModal(modalImage);
+            execCmd('insertHTML', `<img src="${dataUrl}" alt="Imagen insertada" style="max-width:100%; height:auto; margin:8px 0; border-radius:4px;"><p><br></p>`);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      btnApplyImage.addEventListener('click', () => {
+        const url = inputImageUrl.value.trim();
+        closeModal(modalImage);
+        if (url) {
+          execCmd('insertHTML', `<img src="${url}" alt="Imagen insertada" style="max-width:100%; height:auto; margin:8px 0; border-radius:4px;"><p><br></p>`);
+        }
+      });
+
+      // --- Insertar: Otros elementos ---
+      document.getElementById('btnInsertarLinea').addEventListener('click', () => {
+        execCmd('insertHorizontalRule');
+      });
+
+      document.getElementById('btnInsertarFecha').addEventListener('click', () => {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('es-ES', options);
+        execCmd('insertText', dateStr);
+      });
+
+      // --- Insertar: Símbolos ---
+      const modalSymbols = document.getElementById('modalSymbols');
+      const closeModalSymbols = document.getElementById('closeModalSymbols');
+      const btnCloseSymbols = document.getElementById('btnCloseSymbols');
+
+      document.getElementById('btnInsertarSimbolo').addEventListener('click', () => {
+        openModal(modalSymbols);
+      });
+
+      closeModalSymbols.addEventListener('click', () => closeModal(modalSymbols));
+      btnCloseSymbols.addEventListener('click', () => closeModal(modalSymbols));
+
+      document.querySelectorAll('.symbol-pick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sym = btn.textContent.trim();
+          closeModal(modalSymbols);
+          execCmd('insertText', sym);
+        });
+      });
+
+      // --- Disposición (Layout settings) ---
+      const pageMarginsSelect = document.getElementById('pageMarginsSelect');
+      pageMarginsSelect.addEventListener('change', () => {
+        const val = pageMarginsSelect.value;
+        if (val === 'estrecho') {
+          editor.style.padding = '12.7mm 12.7mm';
+        } else if (val === 'ancho') {
+          editor.style.padding = '38mm 38mm';
+        } else {
+          editor.style.padding = '25mm 25mm';
+        }
+      });
+
+      const pageOrientationSelect = document.getElementById('pageOrientationSelect');
+      pageOrientationSelect.addEventListener('change', () => {
+        if (pageOrientationSelect.value === 'landscape') {
+          editor.style.width = '297mm';
+          editor.style.minHeight = '210mm';
+        } else {
+          editor.style.width = '210mm';
+          editor.style.minHeight = '297mm';
+        }
+      });
+
+      const pageColorSelect = document.getElementById('pageColorSelect');
+      pageColorSelect.addEventListener('change', () => {
+        const col = pageColorSelect.value;
+        editor.style.backgroundColor = col;
+        if (col === '#1e293b') {
+          editor.style.color = '#f8fafc';
+        } else {
+          editor.style.color = '#111827';
+        }
+      });
+
+      // --- Buscar y Reemplazar ---
+      const modalSearch = document.getElementById('modalSearch');
+      const closeModalSearch = document.getElementById('closeModalSearch');
+      const btnBuscarReemplazar = document.getElementById('btnBuscarReemplazar');
+      const inputSearchFind = document.getElementById('inputSearchFind');
+      const inputSearchReplace = document.getElementById('inputSearchReplace');
+      const btnSearchFindNext = document.getElementById('btnSearchFindNext');
+      const btnSearchReplaceAll = document.getElementById('btnSearchReplaceAll');
+      const searchMatchStatus = document.getElementById('searchMatchStatus');
+
+      btnBuscarReemplazar.addEventListener('click', () => {
+        searchMatchStatus.textContent = '';
+        openModal(modalSearch);
+      });
+
+      closeModalSearch.addEventListener('click', () => closeModal(modalSearch));
+
+      btnSearchFindNext.addEventListener('click', () => {
+        const query = inputSearchFind.value;
+        if (query) {
+          const found = window.find(query, false, false, true, false, false, false);
+          if (found) {
+            searchMatchStatus.textContent = 'Coincidencia encontrada';
+          } else {
+            searchMatchStatus.textContent = 'No se encontraron más resultados';
+          }
+        }
+      });
+
+      btnSearchReplaceAll.addEventListener('click', () => {
+        const query = inputSearchFind.value;
+        const replaceWith = inputSearchReplace.value;
+        if (!query) return;
+
+        const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        const count = (editor.innerHTML.match(regex) || []).length;
+        editor.innerHTML = editor.innerHTML.replace(regex, replaceWith);
+        searchMatchStatus.textContent = `Se reemplazaron ${count} coincidencias.`;
+        updateDocStats();
+        triggerAutoSave();
+      });
+
+      // --- Revisar & Estadísticas ---
+      const modalStats = document.getElementById('modalStats');
+      const closeModalStats = document.getElementById('closeModalStats');
+      const btnCloseStats = document.getElementById('btnCloseStats');
+      const btnEstadisticas = document.getElementById('btnEstadisticas');
+      const btnLimpiarDocumento = document.getElementById('btnLimpiarDocumento');
+
+      function calculateStats() {
+        const text = editor.innerText || '';
+        const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+        const chars = text.length;
+        const charsNoSpace = text.replace(/\s/g, '').length;
+        const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0).length;
+        const readingTime = Math.ceil(words / 200);
+
+        return { words, chars, charsNoSpace, paragraphs, readingTime };
+      }
+
+      function updateDocStats() {
+        const stats = calculateStats();
+        statusWordCount.textContent = `${stats.words} palabras`;
+        statusCharCount.textContent = `${stats.chars} caracteres`;
+      }
+
+      btnEstadisticas.addEventListener('click', () => {
+        const stats = calculateStats();
+        document.getElementById('statWords').textContent = stats.words;
+        document.getElementById('statChars').textContent = stats.chars;
+        document.getElementById('statCharsNoSpace').textContent = stats.charsNoSpace;
+        document.getElementById('statParagraphs').textContent = stats.paragraphs;
+        document.getElementById('statReadingTime').textContent = `${stats.readingTime} min`;
+        openModal(modalStats);
+      });
+
+      statusWordCount.addEventListener('click', () => btnEstadisticas.click());
+      closeModalStats.addEventListener('click', () => closeModal(modalStats));
+      btnCloseStats.addEventListener('click', () => closeModal(modalStats));
+
+      btnLimpiarDocumento.addEventListener('click', () => {
+        editor.innerHTML = '<p><br></p>';
+        updateDocStats();
+        triggerAutoSave();
+        showToast('Documento vaciado.');
+      });
+
+      // --- Vista (View modes & Ruler toggle) ---
+      const btnModoEdicion = document.getElementById('btnModoEdicion');
+      const btnModoLectura = document.getElementById('btnModoLectura');
+      const checkShowRuler = document.getElementById('checkShowRuler');
+      const rulerBar = document.getElementById('rulerBar');
+
+      btnModoEdicion.addEventListener('click', () => {
+        btnModoEdicion.classList.add('active');
+        btnModoLectura.classList.remove('active');
+        editor.setAttribute('contenteditable', 'true');
+        showToast('Modo de edición activado');
+      });
+
+      btnModoLectura.addEventListener('click', () => {
+        btnModoLectura.classList.add('active');
+        btnModoEdicion.classList.remove('active');
+        editor.setAttribute('contenteditable', 'false');
+        showToast('Modo de lectura: contenido protegido');
+      });
+
+      checkShowRuler.addEventListener('change', () => {
+        rulerBar.style.display = checkShowRuler.checked ? 'flex' : 'none';
+      });
+
+      // --- Zoom Controls ---
+      function updateZoom(val) {
+        val = Math.max(50, Math.min(175, val));
+        zoomSlider.value = val;
+        zoomLabel.textContent = `${val}%`;
+        pageWrapper.style.transform = `scale(${val / 100})`;
+      }
+
+      zoomSlider.addEventListener('input', (e) => {
+        updateZoom(parseInt(e.target.value, 10));
+      });
+
+      document.getElementById('btnZoomIn').addEventListener('click', () => {
+        updateZoom(parseInt(zoomSlider.value, 10) + 10);
+      });
+
+      document.getElementById('btnZoomOut').addEventListener('click', () => {
+        updateZoom(parseInt(zoomSlider.value, 10) - 10);
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          saveDocumentLocally();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+          e.preventDefault();
+          window.print();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+          e.preventDefault();
+          btnBuscarReemplazar.click();
+        }
+      });
+
+      // Auto-save on typing & input
+      editor.addEventListener('input', () => {
+        updateDocStats();
+        triggerAutoSave();
+      });
+      docTitleInput.addEventListener('input', triggerAutoSave);
+
+      // Load from LocalStorage if available
+      try {
+        const savedTitle = localStorage.getItem('word_doc_title');
+        const savedContent = localStorage.getItem('word_doc_content');
+        if (savedTitle) docTitleInput.value = savedTitle;
+        if (savedContent && savedContent.trim().length > 0) {
+          editor.innerHTML = savedContent;
+        }
+      } catch (e) {}
+
+      updateDocStats();
+    });
+  </script>
+</body>
+</html>

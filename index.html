@@ -704,6 +704,24 @@
         min-height: auto !important;
       }
     }
+
+    /* ===== Mejoras ===== */
+    .modal-card{max-height:90vh;display:flex;flex-direction:column}
+    .modal-body{overflow-y:auto}
+    .document-page{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .document-page pre{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:8pt 10pt;font:10pt 'Roboto Mono','Courier New',monospace;white-space:pre-wrap;margin-bottom:10pt}
+    .document-page::before,.document-page::after{position:absolute;left:0;right:0;text-align:center;font-size:9pt;color:#8a8886;pointer-events:none}
+    .document-page::before{content:attr(data-header);top:9mm}
+    .document-page::after{content:attr(data-footer);bottom:9mm}
+    .doc-comment{background:#fff3b0;border-bottom:2px solid #f2b705;cursor:help}
+    .doc-textbox{border:1.5px solid var(--word-blue);border-radius:4px;padding:10pt 12pt;margin:10pt 0;background:#f8fbff}
+    .doc-cover{text-align:center;padding:60mm 0 40mm;page-break-after:always}
+    .doc-cover h1{font-size:34pt;border:none}
+    .document-page hr.page-break{height:0;background:none;border:none;border-top:2px dashed #b3b0ad;page-break-after:always}
+    .document-page input[type=checkbox]{margin-right:6px;transform:scale(1.15)}
+    .show-marks p::after,.show-marks h1::after,.show-marks h2::after,.show-marks h3::after,.show-marks li::after{content:"¶";color:#2563eb;opacity:.6;margin-left:2px}
+    .focus-mode .ribbon-panel-container,.focus-mode .ribbon-tabs-bar,.focus-mode .ruler-container{display:none}
+    @media print{.document-page::before,.document-page::after{content:none}.doc-comment{background:none;border:none}.document-page hr.page-break{border:none}}
   </style>
 </head>
 <body>
@@ -914,6 +932,9 @@
         </div>
         <div class="ribbon-group-title">Edición</div>
       </div>
+
+      <div class="ribbon-group"><div class="ribbon-group-content"><select class="r-select" id="caseSelect" style="width:110px"><option value="">Aa Cambiar a…</option><option value="upper">MAYÚSCULAS</option><option value="lower">minúsculas</option><option value="sentence">Tipo oración</option><option value="title">Cada Palabra</option></select><button class="r-btn r-btn-large" id="btnSelectAll" title="Seleccionar todo (Ctrl+A)"><span style="font-size:20px;line-height:1">☑</span><span>Seleccionar</span></button><button class="r-btn r-btn-large" id="btnMarks" title="Mostrar marcas de párrafo"><span style="font-size:20px;line-height:1">¶</span><span>Marcas</span></button></div><div class="ribbon-group-title">Texto</div></div>
+      <div class="ribbon-group"><div class="ribbon-group-content"><div class="style-box" id="styleCode" title="Bloque de código"><span style="font-size:12px;font-family:'Courier New',monospace">AaBbCc</span><span class="style-box-name">Código</span></div></div><div class="ribbon-group-title">Más estilos</div></div>
     </div>
 
     <!-- PANEL INSERTAR -->
@@ -963,6 +984,11 @@
         </div>
         <div class="ribbon-group-title">Vínculos y Símbolos</div>
       </div>
+
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large" id="btnPortada" title="Portada"><span style="font-size:20px;line-height:1">📄</span><span>Portada</span></button><button class="r-btn r-btn-large" id="btnSaltoPagina" title="Insertar salto de página"><span style="font-size:20px;line-height:1">⤓</span><span>Salto página</span></button><button class="r-btn r-btn-large" id="btnToc" title="Tabla de contenido a partir de los títulos"><span style="font-size:20px;line-height:1">☰</span><span>Contenido</span></button></div><div class="ribbon-group-title">Páginas</div></div>
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large" id="btnHeaderFooter" title="Encabezado, pie de página y numeración (al imprimir/PDF)"><span style="font-size:20px;line-height:1">⎘</span><span>Enc./Pie</span></button></div><div class="ribbon-group-title">Encabezado y pie</div></div>
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large" id="btnCasilla" title="Casilla"><span style="font-size:20px;line-height:1">☐</span><span>Casilla</span></button><button class="r-btn r-btn-large" id="btnCuadro" title="Cuadro texto"><span style="font-size:20px;line-height:1">▭</span><span>Cuadro texto</span></button><button class="r-btn r-btn-large" id="btnComentario" title="Comentario"><span style="font-size:20px;line-height:1">💬</span><span>Comentario</span></button></div><div class="ribbon-group-title">Elementos</div></div>
+      <div class="ribbon-group"><div class="ribbon-group-content"><div style="display:grid;grid-template-columns:auto auto;gap:2px"><button class="r-btn" id="tblAddRow" style="justify-content:flex-start">＋ Fila</button><button class="r-btn" id="tblAddCol" style="justify-content:flex-start">＋ Columna</button><button class="r-btn" id="tblDelRow" style="justify-content:flex-start">− Fila</button><button class="r-btn" id="tblDelCol" style="justify-content:flex-start">− Columna</button><button class="r-btn" id="tblDel" style="justify-content:flex-start">Borrar tabla</button></div></div><div class="ribbon-group-title">Herramientas de tabla</div></div>
     </div>
 
     <!-- PANEL DISPOSICIÓN -->
@@ -1006,6 +1032,9 @@
         </div>
         <div class="ribbon-group-title">Fondo</div>
       </div>
+
+      <div class="ribbon-group"><div class="ribbon-group-content"><div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--text-muted);width:62px">Papel:</span><select class="r-select" id="paperSelect" style="width:110px"><option value="a4">A4</option><option value="carta">Carta</option><option value="legal">Legal</option><option value="a5">A5</option></select></div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--text-muted);width:62px">Columnas:</span><select class="r-select" id="colsSelect" style="width:110px"><option value="1">Una</option><option value="2">Dos</option><option value="3">Tres</option></select></div></div></div><div class="ribbon-group-title">Papel y columnas</div></div>
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large" id="btnWatermark" title="Marca agua"><span style="font-size:20px;line-height:1">💧</span><span>Marca agua</span></button></div><div class="ribbon-group-title">Marca de agua</div></div>
     </div>
 
     <!-- PANEL REVISAR -->
@@ -1023,6 +1052,8 @@
         </div>
         <div class="ribbon-group-title">Revisión</div>
       </div>
+
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large active" id="btnSpell" title="Activar o desactivar corrector"><span style="font-size:20px;line-height:1">✔</span><span>Ortografía</span></button><button class="r-btn r-btn-large" id="btnLeer" title="Leer en voz alta"><span style="font-size:20px;line-height:1">🔊</span><span>Leer en voz alta</span></button><button class="r-btn r-btn-large" id="btnDictar" title="Dictar"><span style="font-size:20px;line-height:1">🎤</span><span>Dictar</span></button><button class="r-btn r-btn-large" id="btnListaComentarios" title="Ver y eliminar comentarios"><span style="font-size:20px;line-height:1">🗨</span><span>Comentarios</span></button></div><div class="ribbon-group-title">Herramientas</div></div>
     </div>
 
     <!-- PANEL VISTA -->
@@ -1049,6 +1080,8 @@
         </div>
         <div class="ribbon-group-title">Mostrar</div>
       </div>
+
+      <div class="ribbon-group"><div class="ribbon-group-content"><button class="r-btn r-btn-large" id="btnFoco" title="Ocultar la cinta de opciones"><span style="font-size:20px;line-height:1">🎯</span><span>Enfoque</span></button><button class="r-btn r-btn-large" id="btnPantalla" title="Pantalla completa"><span style="font-size:20px;line-height:1">⛶</span><span>Pantalla completa</span></button><button class="r-btn r-btn-large" id="btnAncho" title="Ajustar el zoom al ancho"><span style="font-size:20px;line-height:1">↔</span><span>Ancho página</span></button></div><div class="ribbon-group-title">Ventana</div></div>
     </div>
   </div>
 
@@ -1135,7 +1168,7 @@
   <!-- Bottom Word Status Bar -->
   <footer class="word-status-bar">
     <div class="status-left">
-      <span>Página 1 de 1</span>
+      <span id="statusPages">1 página</span>
       <span class="status-clickable" id="statusWordCount" title="Haga clic para ver estadísticas detalladas">0 palabras</span>
       <span class="status-clickable" id="statusCharCount">0 caracteres</span>
       <span>Español (Alfabetización internacional)</span>
@@ -1191,6 +1224,12 @@
               <div style="font-size:11px; color:#605e5c;">Diseño limpio de impresión profesional</div>
             </div>
           </button>
+
+          <button class="modal-btn" id="btnArchivoDoc"  style="display:flex; align-items:center; gap:8px; padding:10px 14px;"><span style="font-size:18px">📝</span><div style="text-align:left;"><strong>Descargar para Word (.doc)</strong><div style="font-size:11px; color:#605e5c;">Se abre directamente en Microsoft Word</div></div></button>
+          <button class="modal-btn" id="btnArchivoTxt"  style="display:flex; align-items:center; gap:8px; padding:10px 14px;"><span style="font-size:18px">🗒</span><div style="text-align:left;"><strong>Descargar como texto (.txt)</strong><div style="font-size:11px; color:#605e5c;">Solo el texto, sin formato</div></div></button>
+          <button class="modal-btn" id="btnTplCarta" data-tpl="carta" style="display:flex; align-items:center; gap:8px; padding:10px 14px;"><span style="font-size:18px">✉</span><div style="text-align:left;"><strong>Plantilla: Carta</strong><div style="font-size:11px; color:#605e5c;">Reemplaza el documento actual</div></div></button>
+          <button class="modal-btn" id="btnTplInforme" data-tpl="informe" style="display:flex; align-items:center; gap:8px; padding:10px 14px;"><span style="font-size:18px">📑</span><div style="text-align:left;"><strong>Plantilla: Informe</strong><div style="font-size:11px; color:#605e5c;">Introducción, desarrollo y conclusiones</div></div></button>
+          <button class="modal-btn" id="btnTplCV" data-tpl="cv" style="display:flex; align-items:center; gap:8px; padding:10px 14px;"><span style="font-size:18px">👤</span><div style="text-align:left;"><strong>Plantilla: Currículum</strong><div style="font-size:11px; color:#605e5c;">Perfil, experiencia, educación y habilidades</div></div></button>
         </div>
       </div>
       <div class="modal-footer">
@@ -1368,6 +1407,9 @@
     </div>
   </div>
 
+  <!-- MODAL: COMENTARIOS -->
+  <div class="modal-backdrop" id="modalComments"><div class="modal-card"><div class="modal-header"><h3>Comentarios</h3><button class="modal-close-btn" id="closeModalComments">&times;</button></div><div class="modal-body" id="commentList"></div><div class="modal-footer"><button class="modal-btn modal-btn-primary" id="btnCloseComments">Cerrar</button></div></div></div>
+
   <!-- Toast Notification -->
   <div class="toast-container" id="toastNotice">Mensaje de notificación</div>
 
@@ -1418,7 +1460,7 @@
 
       // --- Ribbon Tab Switching ---
       const ribbonTabs = document.querySelectorAll('.ribbon-tab-btn[data-panel]');
-      const ribbonPanels = document.querySelectorAll('.ribbon-panel-container .ribbon-group-content');
+      const ribbonPanels = document.querySelectorAll('.ribbon-panel-container > .ribbon-group-content');
 
       ribbonTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -1515,7 +1557,7 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = (event) => {
-            editor.innerHTML = event.target.result;
+            editor.innerHTML = /\.txt$/i.test(file.name) ? event.target.result.split(/\r?\n/).map(l => '<p>' + (esc(l) || '<br>') + '</p>').join('') : cleanHTML(event.target.result);
             docTitleInput.value = file.name.replace(/\.[^/.]+$/, "");
             closeModal(modalArchivo);
             updateDocStats();
@@ -1694,7 +1736,7 @@ ${editor.innerHTML}
         const text = inputLinkText.value.trim() || url;
         closeModal(modalLink);
         if (url) {
-          const html = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+          const html = `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
           execCmd('insertHTML', html);
         }
       });
@@ -1885,8 +1927,11 @@ ${editor.innerHTML}
         if (!query) return;
 
         const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-        const count = (editor.innerHTML.match(regex) || []).length;
-        editor.innerHTML = editor.innerHTML.replace(regex, replaceWith);
+        let count = 0;
+        const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        textNodes.forEach(n => { n.nodeValue = n.nodeValue.replace(regex, () => { count++; return replaceWith; }); });
         searchMatchStatus.textContent = `Se reemplazaron ${count} coincidencias.`;
         updateDocStats();
         triggerAutoSave();
@@ -2012,6 +2057,208 @@ ${editor.innerHTML}
         }
       } catch (e) {}
 
+
+      // ===================== MEJORAS =====================
+      const $ = id => document.getElementById(id);
+      const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+      function cleanHTML(h) {
+        const d = new DOMParser().parseFromString(h, 'text/html');
+        d.querySelectorAll('script,iframe,object,embed,link,meta,style').forEach(n => n.remove());
+        d.querySelectorAll('*').forEach(n => [...n.attributes].forEach(a => {
+          if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name);
+        }));
+        return d.body.innerHTML;
+      }
+      function download(name, type, content) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([content], { type }));
+        a.download = name; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+
+      // Los botones de la cinta no le quitan la selección al texto
+      document.querySelector('.ribbon-panel-container').addEventListener('mousedown', e => {
+        if (e.target.closest('.r-btn, .style-box')) e.preventDefault();
+      });
+
+      // Botones N / K / S, alineación y listas se marcan según el texto seleccionado
+      const stateBtns = { btnBold:'bold', btnItalic:'italic', btnUnderline:'underline', btnStrike:'strikeThrough', btnSubscript:'subscript', btnSuperscript:'superscript', btnAlignLeft:'justifyLeft', btnAlignCenter:'justifyCenter', btnAlignRight:'justifyRight', btnAlignJustify:'justifyFull', btnBulletList:'insertUnorderedList', btnNumberList:'insertOrderedList' };
+      document.addEventListener('selectionchange', () => {
+        if (!editor.contains(document.getSelection().anchorNode)) return;
+        for (const [id, c] of Object.entries(stateBtns)) { try { $(id).classList.toggle('active', document.queryCommandState(c)); } catch (e) {} }
+      });
+
+      // Páginas, tamaño de papel y estilos de impresión
+      const dyn = document.createElement('style'); document.head.append(dyn);
+      let sizeCss = '', hfCss = '';
+      const applyPrint = () => { dyn.textContent = sizeCss + hfCss; };
+      function updatePages() {
+        const h = parseFloat(getComputedStyle(editor).minHeight) || 1122;
+        const n = Math.max(1, Math.ceil(editor.offsetHeight / h - 0.02));
+        $('statusPages').textContent = n === 1 ? '1 página' : n + ' páginas';
+        $('statPages').textContent = n;
+      }
+      const PAPER = { a4:[210,297], carta:[215.9,279.4], legal:[215.9,355.6], a5:[148,210] };
+      function applyPageSize() {
+        let [w, h] = PAPER[$('paperSelect').value];
+        if ($('pageOrientationSelect').value === 'landscape') [w, h] = [h, w];
+        editor.style.width = w + 'mm'; editor.style.minHeight = h + 'mm';
+        sizeCss = `@page{size:${w}mm ${h}mm}`; applyPrint(); updatePages();
+      }
+      $('paperSelect').addEventListener('change', applyPageSize);
+      $('pageOrientationSelect').addEventListener('change', applyPageSize);
+      $('colsSelect').addEventListener('change', () => { editor.style.columnCount = $('colsSelect').value; editor.style.columnGap = '10mm'; updatePages(); });
+      editor.addEventListener('input', updatePages);
+      $('btnEstadisticas').addEventListener('click', updatePages);
+      applyPageSize();
+
+      // Inicio
+      $('caseSelect').addEventListener('change', e => {
+        const m = e.target.value; e.target.value = '';
+        const t = getSelection().toString(); if (!t || !m) return;
+        const f = { upper: x => x.toUpperCase(), lower: x => x.toLowerCase(),
+          sentence: x => x.toLowerCase().replace(/(^\s*|[.!?¡¿]\s+)(\p{L})/gu, (_, a, b) => a + b.toUpperCase()),
+          title: x => x.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, a, b) => a + b.toUpperCase()) }[m];
+        execCmd('insertText', f(t));
+      });
+      $('btnSelectAll').addEventListener('click', () => execCmd('selectAll'));
+      $('btnMarks').addEventListener('click', () => { editor.classList.toggle('show-marks'); $('btnMarks').classList.toggle('active'); });
+      $('styleCode').addEventListener('click', () => execCmd('formatBlock', '<pre>'));
+
+      // Insertar
+      $('btnPortada').addEventListener('click', () => {
+        const t = esc(docTitleInput.value.replace(/ - Word$/, ''));
+        const r = document.createRange(); r.setStart(editor, 0); r.collapse(true);
+        const s = getSelection(); editor.focus(); s.removeAllRanges(); s.addRange(r);
+        execCmd('insertHTML', `<div class="doc-cover"><h1>${t}</h1><h3>Subtítulo del documento</h3><p>Autor, ${new Date().toLocaleDateString('es-ES', { year:'numeric', month:'long', day:'numeric' })}</p></div>`);
+      });
+      $('btnSaltoPagina').addEventListener('click', () => execCmd('insertHTML', '<hr class="page-break"><p><br></p>'));
+      $('btnToc').addEventListener('click', () => {
+        const hs = [...editor.querySelectorAll('h1,h2,h3')];
+        if (!hs.length) { showToast('Agrega títulos (Título 1, 2 o 3) para crear la tabla de contenido.'); return; }
+        const items = hs.map((h, i) => { h.id = h.id || 'sec-' + i; return `<li style="margin-left:${(+h.tagName[1] - 1) * 18}px;list-style:none"><a href="#${h.id}">${esc(h.textContent)}</a></li>`; }).join('');
+        execCmd('insertHTML', `<h2>Contenido</h2><ul style="padding-left:0">${items}</ul><p><br></p>`);
+      });
+      editor.addEventListener('click', e => {
+        const a = e.target.closest('a[href^="#"]');
+        if (a) { e.preventDefault(); const t = editor.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+      });
+      $('btnHeaderFooter').addEventListener('click', () => {
+        const h = prompt('Texto del encabezado (vacío = sin encabezado):', editor.dataset.header || ''); if (h === null) return;
+        const f = prompt('Texto del pie de página (vacío = sin pie):', editor.dataset.footer || ''); if (f === null) return;
+        const n = confirm('¿Numerar las páginas al imprimir o exportar a PDF?');
+        editor.dataset.header = h; editor.dataset.footer = f;
+        const q = x => x.replace(/["\\\n]/g, ' ');
+        hfCss = `@page{${h ? `@top-center{content:"${q(h)}"}` : ''}${f ? `@bottom-left{content:"${q(f)}"}` : ''}${n ? '@bottom-right{content:"Página " counter(page)}' : ''}}`;
+        applyPrint(); showToast('Encabezado y pie actualizados.');
+      });
+      $('btnCasilla').addEventListener('click', () => execCmd('insertHTML', '<input type="checkbox">&nbsp;'));
+      editor.addEventListener('change', e => { if (e.target.type === 'checkbox') { e.target.toggleAttribute('checked', e.target.checked); triggerAutoSave(); } });
+      $('btnCuadro').addEventListener('click', () => execCmd('insertHTML', '<div class="doc-textbox"><p>Escribe aquí…</p></div><p><br></p>'));
+
+      // Herramientas de tabla
+      function tbl(fn) {
+        const n = getSelection().anchorNode;
+        const c = n && editor.contains(n) ? (n.nodeType === 1 ? n : n.parentElement).closest('td,th') : null;
+        if (!c) { showToast('Haz clic dentro de una tabla primero.'); return; }
+        fn(c, c.closest('tr'), c.closest('table')); updateDocStats(); triggerAutoSave();
+      }
+      $('tblAddRow').onclick = () => tbl((c, r) => { const x = r.cloneNode(true); x.querySelectorAll('td,th').forEach(k => k.innerHTML = '<br>'); r.after(x); });
+      $('tblAddCol').onclick = () => tbl((c, r, t) => { const i = c.cellIndex; t.querySelectorAll('tr').forEach(row => { const k = row.cells[i]; if (k) { const x = document.createElement(k.tagName); x.innerHTML = '<br>'; k.after(x); } }); });
+      $('tblDelRow').onclick = () => tbl((c, r, t) => { t.rows.length > 1 ? r.remove() : t.remove(); });
+      $('tblDelCol').onclick = () => tbl((c, r, t) => { const i = c.cellIndex; if (r.cells.length < 2) { t.remove(); return; } t.querySelectorAll('tr').forEach(row => row.cells[i] && row.cells[i].remove()); });
+      $('tblDel').onclick = () => tbl((c, r, t) => t.remove());
+
+      // Símbolos y emojis
+      const SYM = '© ® ™ € £ ¥ ¢ § ¶ † ‡ • … ° ± × ÷ ≠ ≈ ≤ ≥ ∞ √ ∑ π Ω µ ½ ¼ ¾ ² ³ ← → ↑ ↓ ↔ ⇒ ★ ☆ ✓ ✗ ♥ ♦ ☀ ☎ ✉ ⚠ 😀 😂 😍 👍 🎉 🔥 ✅ ❌'.split(' ');
+      const symGrid = document.querySelector('#modalSymbols .modal-body > div');
+      symGrid.innerHTML = SYM.map(x => `<button class="modal-btn symbol-pick-btn">${x}</button>`).join('');
+      symGrid.addEventListener('click', e => { const b = e.target.closest('.symbol-pick-btn'); if (b) { closeModal(modalSymbols); execCmd('insertText', b.textContent.trim()); } });
+
+      // Disposición: marca de agua
+      $('btnWatermark').addEventListener('click', () => {
+        const t = prompt('Texto de la marca de agua (vacío para quitarla):', 'CONFIDENCIAL'); if (t === null) return;
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='700' height='500'><text x='350' y='250' text-anchor='middle' dominant-baseline='middle' transform='rotate(-35 350 250)' font-size='90' font-family='Segoe UI,Arial' font-weight='700' fill='rgba(150,150,150,0.22)'>${esc(t.trim())}</text></svg>`;
+        editor.style.backgroundImage = t.trim() ? `url("data:image/svg+xml,${encodeURIComponent(svg)}")` : '';
+        editor.style.backgroundRepeat = 'no-repeat'; editor.style.backgroundPosition = 'center';
+      });
+
+      // Revisar
+      $('btnSpell').addEventListener('click', () => { editor.spellcheck = !editor.spellcheck; $('btnSpell').classList.toggle('active', editor.spellcheck); showToast(editor.spellcheck ? 'Corrector activado' : 'Corrector desactivado'); });
+      $('btnLeer').addEventListener('click', () => {
+        if (!('speechSynthesis' in window)) { showToast('Tu navegador no admite lectura en voz alta.'); return; }
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); showToast('Lectura detenida'); return; }
+        const u = new SpeechSynthesisUtterance(getSelection().toString() || editor.innerText); u.lang = 'es-ES';
+        speechSynthesis.speak(u); showToast('Leyendo… vuelve a pulsar para detener');
+      });
+      let rec = null;
+      $('btnDictar').addEventListener('click', () => {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) { showToast('El dictado funciona en Chrome o Edge.'); return; }
+        if (rec) { rec.stop(); return; }
+        rec = new SR(); rec.lang = 'es-ES'; rec.continuous = true;
+        rec.onresult = e => { const r = e.results[e.results.length - 1]; if (r.isFinal) execCmd('insertText', r[0].transcript + ' '); };
+        rec.onend = () => { rec = null; $('btnDictar').classList.remove('active'); };
+        rec.start(); $('btnDictar').classList.add('active'); showToast('Dictando… vuelve a pulsar para parar');
+      });
+      $('btnComentario').addEventListener('click', () => {
+        const s = getSelection();
+        if (!s.rangeCount || s.isCollapsed || !editor.contains(s.anchorNode)) { showToast('Selecciona el texto que quieres comentar.'); return; }
+        const txt = s.toString(), rng = s.getRangeAt(0).cloneRange();
+        const t = prompt('Escribe tu comentario:'); if (!t) return;
+        s.removeAllRanges(); s.addRange(rng);
+        execCmd('insertHTML', `<mark class="doc-comment" data-comment="${esc(t)}" title="${esc(t)}">${esc(txt)}</mark>`);
+      });
+      $('btnListaComentarios').addEventListener('click', () => {
+        const L = $('commentList'), cs = [...editor.querySelectorAll('.doc-comment')];
+        L.innerHTML = cs.length ? '' : '<p style="color:#605e5c">Todavía no hay comentarios.</p>';
+        cs.forEach(c => {
+          const d = document.createElement('div');
+          d.style.cssText = 'border-bottom:1px solid #edebe9;padding:8px 0;display:flex;gap:8px;align-items:flex-start';
+          d.innerHTML = `<div style="flex:1"><div style="font-size:11px;color:#605e5c">“${esc(c.textContent.slice(0, 40))}”</div><div>${esc(c.dataset.comment)}</div></div>`;
+          const del = document.createElement('button'); del.className = 'modal-btn'; del.textContent = 'Eliminar';
+          del.onclick = () => { c.replaceWith(...c.childNodes); d.remove(); triggerAutoSave(); };
+          d.append(del); L.append(d);
+        });
+        openModal($('modalComments'));
+      });
+      $('closeModalComments').onclick = $('btnCloseComments').onclick = () => closeModal($('modalComments'));
+
+      // Vista
+      $('btnFoco').addEventListener('click', () => { document.body.classList.toggle('focus-mode'); $('btnFoco').classList.toggle('active'); });
+      $('btnPantalla').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+      $('btnAncho').addEventListener('click', () => updateZoom(Math.round(($('workspaceArea').clientWidth - 60) / editor.offsetWidth * 20) * 5));
+
+      // Archivo: exportar y plantillas
+      $('btnArchivoDoc').addEventListener('click', () => {
+        const t = docTitleInput.value.trim() || 'Documento';
+        download(t + '.doc', 'application/msword', `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${esc(t)}</title><style>body{font-family:Calibri,Arial;font-size:11pt}table{border-collapse:collapse}td,th{border:1px solid #999;padding:4px 8px}</style></head><body>${editor.innerHTML}</body></html>`);
+        closeModal(modalArchivo); showToast('Descargado como .doc: ábrelo con Word.');
+      });
+      $('btnArchivoTxt').addEventListener('click', () => {
+        download((docTitleInput.value.trim() || 'Documento') + '.txt', 'text/plain;charset=utf-8', editor.innerText);
+        closeModal(modalArchivo); showToast('Descargado como texto.');
+      });
+      const TPL = {
+        carta: ['Carta', '<p style="text-align:right">Ciudad, fecha</p><p><strong>Estimado/a Nombre Apellido:</strong></p><p>Escribe aquí el cuerpo de la carta…</p><p>Atentamente,</p><p><br></p><p><strong>Tu nombre</strong></p>'],
+        informe: ['Informe', '<h1>Título del informe</h1><p><em>Autor, fecha</em></p><h2>1. Introducción</h2><p>Presenta el tema y el objetivo.</p><h2>2. Desarrollo</h2><p>Explica los puntos principales.</p><h2>3. Conclusiones</h2><p>Resume lo aprendido.</p>'],
+        cv: ['Currículum', '<h1>Tu nombre</h1><p>Correo, teléfono, ciudad</p><h2>Perfil</h2><p>Resumen breve de quién eres.</p><h2>Experiencia</h2><p>Cargo, empresa, fechas.</p><h2>Educación</h2><p>Título, institución, año.</p><h2>Habilidades</h2><ul><li>Habilidad 1</li><li>Habilidad 2</li></ul>']
+      };
+      document.querySelectorAll('[data-tpl]').forEach(b => b.addEventListener('click', () => {
+        const [n, h] = TPL[b.dataset.tpl];
+        editor.innerHTML = h; docTitleInput.value = n + ' - Word';
+        closeModal(modalArchivo); updateDocStats(); updatePages(); triggerAutoSave(); showToast('Plantilla aplicada: ' + n);
+      }));
+
+      // Atajos extra
+      document.addEventListener('keydown', e => {
+        if (!(e.ctrlKey || e.metaKey)) return;
+        const k = e.key.toLowerCase();
+        if (k === 'k') { e.preventDefault(); $('btnInsertarEnlace').click(); }
+        else if (k === 'h') { e.preventDefault(); btnBuscarReemplazar.click(); }
+      });
+      updatePages();
       updateDocStats();
     });
   </script>
